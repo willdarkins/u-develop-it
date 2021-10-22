@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS votes;
+
 DROP TABLE IF EXISTS voters;
 
 DROP TABLE IF EXISTS candidates;
@@ -29,6 +31,16 @@ CREATE TABLE voters (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE votes (
+  id INTEGER AUTO_INCREMENT PRIMARY KEY,
+  voter_id INTEGER NOT NULL,
+  candidate_id INTEGER NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT uc_voter UNIQUE (voter_id),
+  CONSTRAINT fk_voter FOREIGN KEY (voter_id) REFERENCES voters(id) ON DELETE CASCADE,
+  CONSTRAINT fk_candidate FOREIGN KEY (candidate_id) REFERENCES candidates(id) ON DELETE CASCADE
+);
+
 -- This will drop/delete the tables every time you run the schema.sql file, ensuring that you start with a clean slate.
 
 --CONSTRAINT allows us to flag the party_id field as an official foreign key and tells SQL which table and field it references.
@@ -42,3 +54,8 @@ CREATE TABLE voters (
 
 --CURRENT_TIMESTAMP: This will return the current date and time in the same 2020-01-01 13:00:00 format.
 --Note that the time will be based on what time it is according to your server, not the client's machine.
+
+-- The next two constraints are foreign key constraints, which you've seen before.
+-- The difference now is the ON DELETE CASCADE statement.
+-- Previously, ON DELETE SET NULL would set the record's field to NULL if the key from the reference table was deleted.
+-- With ON DELETE CASCADE, deleting the reference key will also delete the entire row from this table.
